@@ -5,19 +5,25 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync"
 )
 
 //example copied from the url https://www.youtube.com/watch?v=3atNYmqXyV4
 
 // In the example we sending a request for the first url and wait for the response to come,
 //once receive the response, check for the error, print and proceed to the next url
+var wg sync.WaitGroup
+var mut sync.Mutex
 
 func sendrequest(url string) {
+	defer wg.Done()
 	res, err := http.Get(url)
 	if err != nil {
 		panic(err)
 	}
+	mut.Lock()
 	fmt.Printf("[%d] %s\n", res.StatusCode, url)
+	defer mut.Unlock()
 }
 
 //go run main.go google.com github.com tour.golang.org
@@ -29,8 +35,14 @@ func main() {
 	}
 
 	for _, url := range os.Args[1:] {
-		sendrequest("https://" + url)
+
+		//sendrequest("https://" + url)
+		go sendrequest("https://" + url)
+		wg.Add(1)
+
 	}
+	wg.Wait()
 }
 
 //real    0m4.332s
+//real    0m3.098s
