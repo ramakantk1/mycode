@@ -9,6 +9,9 @@ import (
 
 //example copied from the url https://www.youtube.com/watch?v=3atNYmqXyV4
 
+// In the example we sending a request for the first url and wait for the response to come,
+//once receive the response, check for the error, print and proceed to the next url
+
 func sendrequest(url string) {
 	res, err := http.Get(url)
 	if err != nil {
